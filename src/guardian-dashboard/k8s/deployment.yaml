@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guardian-dashboard
+  labels:
+    app: guardian-dashboard
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: guardian-dashboard
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: guardian-dashboard
+        version: v1
+    spec:
+      containers:
+      - name: guardian-dashboard
+        image: us-central1-docker.pkg.dev/PROJECT_ID/bank-guardian-repo/guardian-dashboard
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: FINANCIAL_GUARDIAN_URL
+          value: "http://financial-guardian:8081"
+        - name: OPS_GUARDIAN_URL
+          value: "http://ops-guardian:8083"
+        - name: EXPLAINER_AGENT_URL
+          value: "http://explainer-agent:8082"
+        - name: PORT
+          value: "8080"
+        livenessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        volumeMounts:
+        - name: tmp-dir
+          mountPath: /tmp
+      volumes:
+      - name: tmp-dir
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: guardian-dashboard
+  labels:
+    app: guardian-dashboard
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: http
+  selector:
+    app: guardian-dashboard

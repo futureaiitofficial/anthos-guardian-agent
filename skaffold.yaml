@@ -44,5 +44,8 @@ requires:
 - configs:
   - ops-guardian
   path: src/ops-guardian/skaffold.yaml
+- configs:
+  - guardian-dashboard
+  path: src/guardian-dashboard/skaffold.yaml
 deploy:
   tolerateFailuresUntilDeadline: true

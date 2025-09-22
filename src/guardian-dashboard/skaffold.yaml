@@ -1,0 +1,34 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: guardian-dashboard
+build:
+  artifacts:
+  - image: guardian-dashboard
+    context: .
+    docker:
+      dockerfile: Dockerfile
+  tagPolicy:
+    envTemplate:
+      template: "{{.IMAGE_NAME}}:{{.VERSION}}"
+test:
+- image: guardian-dashboard
+  custom:
+  - command: python
+    args: ["-m", "py_compile", "dashboard_service.py"]
+profiles:
+- name: development
+  deploy:
+    kubectl:
+      manifests:
+      - k8s/deployment.yaml
+- name: staging  
+  deploy:
+    kubectl:
+      manifests:
+      - k8s/deployment.yaml
+- name: production
+  deploy:
+    kubectl:
+      manifests:
+      - k8s/deployment.yaml

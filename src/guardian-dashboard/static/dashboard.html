@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛡️ Guardian Command Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(45deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .agent-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-active { background-color: #00ff88; }
+        .status-error { background-color: #ff4757; }
+        .status-paused { background-color: #ffa502; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 300px;
+            height: calc(100vh - 80px);
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .panel h2 {
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .conversations-panel {
+            grid-column: 1;
+            grid-row: 1;
+        }
+
+        .api-panel {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .demo-panel {
+            grid-column: 1 / -1;
+            grid-row: 2;
+        }
+
+        .conversation-feed {
+            height: calc(100% - 60px);
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .conversation-message {
+            display: flex;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border-left: 4px solid;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg-financial { border-left-color: #00d4ff; }
+        .msg-ops { border-left-color: #00ff88; }
+        .msg-explainer { border-left-color: #ffa502; }
+        .msg-demo { border-left-color: #ff6b6b; }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .agent-name {
+            font-weight: bold;
+        }
+
+        .timestamp {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .message-content {
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .api-call {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 3px solid #00ff88;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.85rem;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .api-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        .method-post { color: #00ff88; }
+        .method-get { color: #00d4ff; }
+        .method-put { color: #ffa502; }
+        .method-delete { color: #ff4757; }
+
+        .status-200 { color: #00ff88; }
+        .status-400 { color: #ffa502; }
+        .status-500 { color: #ff4757; }
+
+        .api-data {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.5rem;
+            border-radius: 5px;
+            margin: 0.5rem 0;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .demo-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .demo-button {
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .demo-button:active {
+            transform: translateY(0);
+        }
+
+        .demo-button.running {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            animation: running 2s infinite;
+        }
+
+        @keyframes running {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .correlation-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ffa502;
+            animation: pulse 1s infinite;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            z-index: 1000;
+        }
+
+        .connected {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid #00ff88;
+            color: #00ff88;
+        }
+
+        .disconnected {
+            background: rgba(255, 71, 87, 0.2);
+            border: 1px solid #ff4757;
+            color: #ff4757;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 1fr 300px;
+            }
+            
+            .api-panel {
+                grid-column: 1;
+                grid-row: 2;
+            }
+            
+            .demo-panel {
+                grid-column: 1;
+                grid-row: 3;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🛡️ Guardian Command Center</h1>
+        <div class="status-bar">
+            <div class="agent-status" id="financial-status">
+                <div class="status-dot status-active"></div>
+                Financial Guardian
+            </div>
+            <div class="agent-status" id="ops-status">
+                <div class="status-dot status-active"></div>
+                Ops Guardian
+            </div>
+            <div class="agent-status" id="explainer-status">
+                <div class="status-dot status-active"></div>
+                Explainer Agent
+            </div>
+        </div>
+    </div>
+
+    <div class="connection-status connected" id="connection-status">
+        🟢 Connected
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="panel conversations-panel">
+            <h2>🗣️ Agent Conversations</h2>
+            <div class="conversation-feed scrollbar" id="conversation-feed">
+                <!-- Conversations will be populated here -->
+            </div>
+        </div>
+
+        <div class="panel api-panel">
+            <h2>📡 API Monitoring</h2>
+            <div class="conversation-feed scrollbar" id="api-feed">
+                <!-- API calls will be populated here -->
+            </div>
+        </div>
+
+        <div class="panel demo-panel">
+            <h2>🎮 Demo Scenarios</h2>
+            <div class="demo-controls" id="demo-controls">
+                <button class="demo-button" onclick="runDemo('fraud_coordination')">
+                    🚨 Fraud Coordination
+                </button>
+                <button class="demo-button" onclick="runDemo('traffic_prediction')">
+                    📈 Proactive Scaling
+                </button>
+                <button class="demo-button" onclick="runDemo('multi_agent_conflict')">
+                    ⚖️ Priority Resolution
+                </button>
+            </div>
+            <div class="stats-bar">
+                <div class="stat">
+                    <div class="stat-number" id="total-conversations">0</div>
+                    <div class="stat-label">Conversations</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="total-api-calls">0</div>
+                    <div class="stat-label">API Calls</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="active-correlations">0</div>
+                    <div class="stat-label">Active Correlations</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="uptime">00:00</div>
+                    <div class="stat-label">Uptime</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let socket;
+        let startTime = Date.now();
+        let runningDemos = new Set();
+
+        // Initialize WebSocket connection
+        function initWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws`;
+            
+            socket = new WebSocket(wsUrl);
+            
+            socket.onopen = function() {
+                updateConnectionStatus(true);
+                console.log('Connected to Guardian Command Center');
+            };
+            
+            socket.onmessage = function(event) {
+                const message = JSON.parse(event.data);
+                handleWebSocketMessage(message);
+            };
+            
+            socket.onclose = function() {
+                updateConnectionStatus(false);
+                console.log('Disconnected from Guardian Command Center');
+                // Attempt to reconnect after 5 seconds
+                setTimeout(initWebSocket, 5000);
+            };
+            
+            socket.onerror = function(error) {
+                console.error('WebSocket error:', error);
+                updateConnectionStatus(false);
+            };
+        }
+
+        function updateConnectionStatus(connected) {
+            const statusEl = document.getElementById('connection-status');
+            if (connected) {
+                statusEl.textContent = '🟢 Connected';
+                statusEl.className = 'connection-status connected';
+            } else {
+                statusEl.textContent = '🔴 Disconnected';
+                statusEl.className = 'connection-status disconnected';
+            }
+        }
+
+        function handleWebSocketMessage(message) {
+            switch (message.type) {
+                case 'initial_data':
+                    loadInitialData(message.data);
+                    break;
+                case 'conversation':
+                    addConversation(message.data);
+                    break;
+                case 'api_call':
+                    addAPICall(message.data);
+                    break;
+                case 'agent_state':
+                    updateAgentStatus(message.data);
+                    break;
+            }
+        }
+
+        function loadInitialData(data) {
+            // Load conversations
+            data.conversations.forEach(conv => addConversation(conv, false));
+            
+            // Load API calls
+            data.api_calls.forEach(call => addAPICall(call, false));
+            
+            // Update stats
+            updateStats(data);
+            
+            // Update agent states
+            Object.values(data.agent_states).forEach(state => updateAgentStatus(state));
+        }
+
+        function addConversation(conversation, animate = true) {
+            const feed = document.getElementById('conversation-feed');
+            const messageEl = document.createElement('div');
+            
+            const agentClass = getAgentClass(conversation.from_agent);
+            messageEl.className = `conversation-message ${agentClass}`;
+            if (!animate) messageEl.style.animation = 'none';
+            
+            const timestamp = new Date(conversation.timestamp).toLocaleTimeString();
+            const toAgent = conversation.to_agent || 'System';
+            
+            messageEl.innerHTML = `
+                <div style="flex: 1;">
+                    <div class="message-header">
+                        <span class="agent-name">${conversation.from_agent} → ${toAgent}</span>
+                        <span class="timestamp">${timestamp}</span>
+                    </div>
+                    <div class="message-content">${conversation.content}</div>
+                    ${conversation.correlation_id ? `<div style="font-size: 0.7rem; color: rgba(255,255,255,0.5); margin-top: 0.5rem;">Correlation: ${conversation.correlation_id.substring(0, 8)}...</div>` : ''}
+                </div>
+                ${conversation.correlation_id ? '<div class="correlation-indicator"></div>' : ''}
+            `;
+            
+            feed.insertBefore(messageEl, feed.firstChild);
+            
+            // Keep only last 50 messages
+            while (feed.children.length > 50) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+
+        function addAPICall(apiCall, animate = true) {
+            const feed = document.getElementById('api-feed');
+            const callEl = document.createElement('div');
+            
+            callEl.className = 'api-call';
+            if (!animate) callEl.style.animation = 'none';
+            
+            const timestamp = new Date(apiCall.timestamp).toLocaleTimeString();
+            const methodClass = `method-${apiCall.method.toLowerCase()}`;
+            const statusClass = `status-${Math.floor(apiCall.status_code / 100) * 100}`;
+            
+            callEl.innerHTML = `
+                <div class="api-header">
+                    <span class="${methodClass}">${apiCall.method}</span>
+                    <span class="${statusClass}">${apiCall.status_code} (${apiCall.duration_ms}ms)</span>
+                </div>
+                <div style="margin-bottom: 0.5rem;">
+                    <strong>${apiCall.service}</strong> ${apiCall.endpoint}
+                </div>
+                ${Object.keys(apiCall.request_data).length > 0 ? `
+                    <div class="api-data">
+                        <strong>Request:</strong> ${JSON.stringify(apiCall.request_data, null, 2)}
+                    </div>
+                ` : ''}
+                ${Object.keys(apiCall.response_data).length > 0 ? `
+                    <div class="api-data">
+                        <strong>Response:</strong> ${JSON.stringify(apiCall.response_data, null, 2)}
+                    </div>
+                ` : ''}
+                <div style="font-size: 0.7rem; color: rgba(255,255,255,0.5);">${timestamp}</div>
+            `;
+            
+            feed.insertBefore(callEl, feed.firstChild);
+            
+            // Keep only last 30 API calls
+            while (feed.children.length > 30) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+
+        function updateAgentStatus(agentState) {
+            const statusId = `${agentState.agent_name.replace('-', '')}-status`;
+            const statusEl = document.getElementById(statusId);
+            
+            if (statusEl) {
+                const dot = statusEl.querySelector('.status-dot');
+                dot.className = `status-dot status-${agentState.status}`;
+            }
+        }
+
+        function getAgentClass(agentName) {
+            if (agentName.includes('financial')) return 'msg-financial';
+            if (agentName.includes('ops')) return 'msg-ops';
+            if (agentName.includes('explainer')) return 'msg-explainer';
+            return 'msg-demo';
+        }
+
+        async function runDemo(scenarioId) {
+            if (runningDemos.has(scenarioId)) return;
+            
+            runningDemos.add(scenarioId);
+            const button = event.target;
+            const originalText = button.textContent;
+            
+            button.classList.add('running');
+            button.textContent = '🔄 Running...';
+            
+            try {
+                const response = await fetch(`/api/demo-scenarios/${scenarioId}/run`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    console.log(`Demo ${scenarioId} started successfully`);
+                } else {
+                    console.error(`Failed to start demo ${scenarioId}`);
+                }
+            } catch (error) {
+                console.error('Error running demo:', error);
+            }
+            
+            // Reset button after 10 seconds
+            setTimeout(() => {
+                button.classList.remove('running');
+                button.textContent = originalText;
+                runningDemos.delete(scenarioId);
+            }, 10000);
+        }
+
+        function updateStats(data) {
+            document.getElementById('total-conversations').textContent = data.total_conversations || 0;
+            document.getElementById('total-api-calls').textContent = data.total_api_calls || 0;
+            document.getElementById('active-correlations').textContent = data.active_correlations || 0;
+        }
+
+        function updateUptime() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            document.getElementById('uptime').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', function() {
+            initWebSocket();
+            setInterval(updateUptime, 1000);
+            
+            // Add some initial demo data
+            setTimeout(() => {
+                addConversation({
+                    id: 'welcome',
+                    timestamp: new Date().toISOString(),
+                    from_agent: 'guardian-system',
+                    to_agent: 'operators',
+                    message_type: 'system_message',
+                    content: '🎬 Welcome to Guardian Command Center! Click demo scenarios to see AI agents in action.',
+                    correlation_id: null,
+                    metadata: {}
+                }, false);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
