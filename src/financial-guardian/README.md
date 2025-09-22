@@ -1,4 +1,4 @@
-# Financial Guardian - AI-Powered Fraud Detection Service
+# Financial Guardian Agent - AI-Powered Fraud Detection Service
 
 An intelligent fraud detection microservice that integrates with Bank of Anthos to provide real-time transaction monitoring and anomaly detection using Google's Gemini AI.
 
