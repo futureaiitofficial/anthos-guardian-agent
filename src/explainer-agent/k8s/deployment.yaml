@@ -32,7 +32,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: explainer-agent
+        image: us-central1-docker.pkg.dev/PROJECT_ID/bank-guardian-repo/explainer-agent
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8082

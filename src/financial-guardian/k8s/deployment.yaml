@@ -41,8 +41,8 @@ spec:
               - all
           privileged: false
           readOnlyRootFilesystem: true
-        image: financial-guardian
-        imagePullPolicy: Never
+        image: us-central1-docker.pkg.dev/PROJECT_ID/bank-guardian-repo/financial-guardian
+        imagePullPolicy: IfNotPresent
         env:
         - name: VERSION
           value: "dev"
@@ -57,7 +57,7 @@ spec:
               name: guardian-secrets
               key: GEMINI_API_KEY
         - name: GEMINI_MODEL
-          value: "gemini-pro"
+          value: "gemini-1.5-flash"
         # Bank of Anthos service endpoints
         - name: TRANSACTION_HISTORY_ADDR
           valueFrom:
