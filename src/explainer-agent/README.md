@@ -2,14 +2,14 @@
 
 The **Multi-Agent Explainer Agent** serves as the universal translator for the Bank Guardian AI system, converting technical events from multiple Guardian agents into human-readable explanations with full multi-agent context.
 
-## 🎯 **What This Service Does**
+## What This Service Does
 
-### **Multi-Agent Event Processing**
-- **Correlates events** from Financial Guardian, Ops Guardian, and Coordinator Agent
-- **Generates comprehensive explanations** that show the full multi-agent picture
-- **Handles coordination scenarios** where agents work together or resolve conflicts
+### Multi-Agent Event Processing
+- Correlates events from Financial Guardian, Ops Guardian, and Coordinator Agent
+- Generates comprehensive explanations that show the full multi-agent picture
+- Handles coordination scenarios where agents work together or resolve conflicts
 
-### **Example Multi-Agent Scenario**
+### Example Multi-Agent Scenario
 
 **Input Events:**
 1. **Financial Guardian**: Detects coordinated fraud attack
@@ -18,7 +18,7 @@ The **Multi-Agent Explainer Agent** serves as the universal translator for the B
 
 **Generated Explanation:**
 ```
-🎯 Multi-Agent Coordination
+Multi-Agent Coordination
 
 Action: Coordinated fraud response with infrastructure freeze
 Involved Agents: financial-guardian, coordinator-agent, ops-guardian
@@ -32,9 +32,9 @@ Impact: 15 suspicious transactions blocked, scaling paused for 20 minutes
 Next Steps: Monitor fraud investigation progress, resume scaling when cleared
 ```
 
-## 🏗️ **Architecture**
+## Architecture
 
-### **Multi-Agent Event Flow**
+### Multi-Agent Event Flow
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
 │ Financial       │    │   Explainer      │    │ Ops Guardian    │
@@ -57,25 +57,25 @@ Next Steps: Monitor fraud investigation progress, resume scaling when cleared
                        └──────────────────┘
 ```
 
-## 🚀 **Key Features**
+## Key Features
 
-### **1. Event Correlation**
+### 1. Event Correlation
 - **correlation_id**: Links related events from multiple agents
 - **Time-based correlation**: Groups events within 5-minute windows
 - **Cross-agent context**: Enriches explanations with data from all agents
 
-### **2. Multi-Agent Scenarios**
+### 2. Multi-Agent Scenarios
 - **Coordination**: When Coordinator Agent orchestrates multiple agents
 - **Priority Conflicts**: When agents have competing priorities  
 - **Cascading Actions**: When one agent's action triggers others
 
-### **3. Audience-Specific Explanations**
+### 3. Audience-Specific Explanations
 - **Users**: Simple, reassuring explanations about their account security
 - **Operators**: Technical details about system coordination and conflicts
 
-## 📡 **API Endpoints**
+## API Endpoints
 
-### **Core Multi-Agent Processing**
+### Core Multi-Agent Processing
 
 #### `POST /explain/event`
 Process single agent event (with potential correlation to other agents).

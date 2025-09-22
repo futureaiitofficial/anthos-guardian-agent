@@ -1,33 +1,29 @@
-# 🚀 Ops Guardian Agent
+# Ops Guardian Agent
 
 **Intelligent Infrastructure Monitoring & Auto-Scaling for Bank of Anthos**
 
-The Ops Guardian is your AI-powered DevOps teammate that never sleeps! It continuously monitors your infrastructure, predicts traffic patterns, and makes intelligent scaling decisions while coordinating with other Guardian agents.
+The Ops Guardian Agent provides AI-powered infrastructure management for Bank of Anthos, continuously monitoring service health, predicting traffic patterns, and making intelligent scaling decisions while coordinating with other Guardian agents.
 
----
+## What This Service Does
 
-## 🎯 **What Does Ops Guardian Do?**
+### Intelligent Monitoring
+- Real-time metrics tracking for CPU, memory, response times, and error rates
+- Pattern recognition that learns application behavior over time  
+- Predictive analytics using Google Gemini AI to forecast scaling needs
+- Business context awareness of banking traffic patterns (lunch rush, paydays, etc.)
 
-### **🔍 Intelligent Monitoring**
-- **Real-time metrics**: Tracks CPU, memory, response times, and error rates
-- **Pattern recognition**: Learns your application's behavior over time  
-- **Predictive analytics**: Uses Google Gemini AI to forecast scaling needs
-- **Business context**: Understands banking traffic patterns (lunch rush, paydays, etc.)
+### Smart Auto-Scaling
+- AI-powered decisions where Gemini analyzes metrics and predicts optimal scaling
+- Banking-aware logic that considers financial service availability requirements
+- Proactive scaling that scales up before performance degrades
+- Cost optimization through intelligent scale-down during low-traffic periods
 
-### **⚡ Smart Auto-Scaling**
-- **AI-powered decisions**: Gemini analyzes metrics and predicts optimal scaling
-- **Banking-aware**: Considers financial service availability requirements
-- **Proactive scaling**: Scales up before performance degrades
-- **Cost optimization**: Scales down during low-traffic periods
+### Multi-Agent Coordination
+- Fraud investigation priority that pauses scaling during active fraud cases
+- Resource coordination that works with Financial Guardian on priority decisions
+- Transparent explanations through partnership with Explainer Agent
 
-### **🤝 Multi-Agent Coordination**
-- **Fraud investigation priority**: Pauses scaling during active fraud cases
-- **Resource coordination**: Works with Financial Guardian on priority decisions
-- **Transparent explanations**: Partners with Explainer Agent for clear communication
-
----
-
-## 🏗️ **Architecture Overview**
+## Architecture Overview
 
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
@@ -51,222 +47,287 @@ The Ops Guardian is your AI-powered DevOps teammate that never sleeps! It contin
     └─────────────────┘ └─────────────┘ └─────────────────┘
 ```
 
-## 🚀 **Key Features**
+## Key Features
 
-### **📊 Comprehensive Monitoring**
-- **Service Health**: Monitors all Bank of Anthos microservices
-- **Resource Usage**: Tracks CPU, memory, and storage utilization
-- **Performance Metrics**: Monitors response times and error rates
-- **Historical Analysis**: Maintains metrics history for trend analysis
+### Kubernetes Integration
+- Native integration with Kubernetes metrics API
+- Automatic discovery of Bank of Anthos services
+- Real-time pod and deployment monitoring
+- RBAC-compliant service account configuration
 
-### **🧠 AI-Powered Scaling**
-- **Traffic Prediction**: Uses Gemini AI to forecast load patterns
-- **Context-Aware**: Considers time of day, day of week, and business patterns
-- **Confidence Scoring**: Each scaling decision includes confidence levels
-- **Fallback Logic**: Rule-based scaling when AI is unavailable
+### AI-Powered Predictions
+- Google Gemini integration for intelligent decision making
+- Historical pattern analysis for traffic prediction
+- Business-aware scaling logic for banking applications
+- Confidence scoring for scaling recommendations
 
-### **🔄 Coordination Engine**
-- **Priority Management**: Coordinates with Financial Guardian on resource allocation
-- **Event Correlation**: Links scaling events with fraud investigations
-- **Explanation Generation**: Partners with Explainer Agent for transparency
-- **Manual Override**: Supports manual scaling with proper notifications
+### Multi-Agent Awareness
+- Coordination with Financial Guardian during fraud investigations
+- Priority-based decision making when agents have conflicting needs
+- Event correlation for system-wide visibility
+- Explainer Agent integration for transparent operations
 
----
+## API Reference
 
-## 🛠️ **API Reference**
+### Health Endpoints
 
-### **Health & Status**
+**GET /ready**
+Kubernetes readiness probe endpoint.
 ```bash
-# Health check
-GET /ready
-GET /healthy
-
-# Monitoring status
-GET /monitoring/status
+curl http://ops-guardian:8083/ready
 ```
-
-### **Infrastructure Monitoring**
-```bash
-# Start monitoring
-POST /monitoring/start
-
-# Stop monitoring  
-POST /monitoring/stop
-
-# Get current metrics
-GET /metrics
-```
-
-### **Scaling Operations**
-```bash
-# Get scaling recommendation
-POST /scaling/decision
+Response:
+```json
 {
-  "service_name": "frontend"
-}
-
-# Manual scaling
-POST /scaling/manual
-{
-  "service_name": "frontend",
-  "target_replicas": 3
+  "service": "ops-guardian",
+  "status": "ready"
 }
 ```
 
-### **Multi-Agent Coordination**
+**GET /healthy**
+Detailed health check with system status.
 ```bash
-# Pause scaling for coordination
-POST /coordination/pause
+curl http://ops-guardian:8083/healthy
+```
+Response:
+```json
 {
-  "reason": "Active fraud investigation"
+  "service": "ops-guardian",
+  "status": "healthy",
+  "monitoring_active": true,
+  "coordination_paused": false,
+  "kubernetes_connected": true,
+  "ai_enabled": true,
+  "monitored_services": 6
 }
-
-# Resume normal operations
-POST /coordination/resume
 ```
 
----
+### Monitoring Control
 
-## 🎮 **Quick Demo**
-
-### **Start Infrastructure Monitoring**
+**POST /monitoring/start**
+Start infrastructure monitoring.
 ```bash
-# Deploy Ops Guardian
+curl -X POST http://ops-guardian:8083/monitoring/start
+```
+
+**POST /monitoring/stop**
+Stop infrastructure monitoring.
+```bash
+curl -X POST http://ops-guardian:8083/monitoring/stop
+```
+
+**GET /monitoring/status**
+Get current monitoring status.
+```bash
+curl http://ops-guardian:8083/monitoring/status
+```
+
+### Metrics and Scaling
+
+**GET /metrics**
+Get current infrastructure metrics for all monitored services.
+```bash
+curl http://ops-guardian:8083/metrics
+```
+Response:
+```json
+{
+  "timestamp": "2025-01-15T10:30:00Z",
+  "metrics": {
+    "frontend": {
+      "service_name": "frontend",
+      "cpu_usage": 45.2,
+      "memory_usage": 32.1,
+      "current_replicas": 2,
+      "desired_replicas": 2,
+      "response_time_avg": 150.5,
+      "request_rate": 25.3,
+      "error_rate": 0.1
+    }
+  },
+  "coordination_paused": false
+}
+```
+
+**POST /scaling/decision**
+Get AI scaling recommendation for a service.
+```bash
+curl -X POST http://ops-guardian:8083/scaling/decision \
+  -H "Content-Type: application/json" \
+  -d '{"service_name": "frontend"}'
+```
+
+**POST /scaling/manual**
+Manually scale a service.
+```bash
+curl -X POST http://ops-guardian:8083/scaling/manual \
+  -H "Content-Type: application/json" \
+  -d '{"service_name": "frontend", "target_replicas": 3}'
+```
+
+### Coordination
+
+**POST /coordination/pause**
+Pause scaling operations for coordination with other agents.
+```bash
+curl -X POST http://ops-guardian:8083/coordination/pause \
+  -H "Content-Type: application/json" \
+  -d '{"reason": "Active fraud investigation"}'
+```
+
+**POST /coordination/resume**
+Resume normal scaling operations.
+```bash
+curl -X POST http://ops-guardian:8083/coordination/resume
+```
+
+## Deployment
+
+### Prerequisites
+- Kubernetes cluster with metrics API enabled
+- Google Gemini AI API key
+- Bank of Anthos services deployed
+- Appropriate RBAC permissions for service account
+
+### Local Development
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Set environment variables
+export GEMINI_API_KEY="your_api_key"
+export PORT=8083
+
+# Run the service
+python ops_guardian.py
+```
+
+### Kubernetes Deployment
+```bash
+# Deploy to Kubernetes
 kubectl apply -f k8s/deployment.yaml
 
-# Port forward for testing
-kubectl port-forward service/ops-guardian 8083:8083
-
-# Start monitoring
-curl -X POST http://localhost:8083/monitoring/start
+# Verify deployment
+kubectl get pods -l app=ops-guardian
+kubectl logs deployment/ops-guardian
 ```
 
-### **Check Current Infrastructure**
+### Environment Variables
+- `GEMINI_API_KEY`: Google Gemini AI API key (required)
+- `GEMINI_MODEL`: Gemini model to use (default: gemini-1.5-flash)
+- `PORT`: Service port (default: 8083)
+- `LOG_LEVEL`: Logging level (default: INFO)
+
+## Monitored Services
+
+The Ops Guardian automatically monitors these Bank of Anthos services:
+- **frontend**: Customer-facing web interface
+- **balancereader**: Account balance service
+- **ledgerwriter**: Transaction processing service
+- **transactionhistory**: Transaction history service
+- **userservice**: User management service
+- **contacts**: Contact management service
+
+## AI Decision Making
+
+### Scaling Logic
+The AI considers multiple factors when making scaling decisions:
+- Current resource utilization (CPU, memory)
+- Historical usage patterns
+- Time-based patterns (business hours, lunch rush, etc.)
+- Error rates and response times
+- Business context (banking-specific patterns)
+
+### Example AI Decision
+```json
+{
+  "service": "frontend",
+  "scaling_decision": {
+    "target_replicas": 4,
+    "reason": "Lunch rush traffic pattern detected, CPU usage trending upward",
+    "confidence": 0.87,
+    "coordination_needed": false
+  }
+}
+```
+
+## Multi-Agent Scenarios
+
+### Fraud Investigation Priority
+When Financial Guardian detects fraud, Ops Guardian:
+1. Pauses automatic scaling to preserve system resources
+2. Maintains current capacity for investigation stability
+3. Coordinates with Explainer Agent to communicate the decision
+
+### Resource Conflict Resolution
+When multiple agents need resources:
+1. Financial Guardian fraud investigations take priority
+2. Critical infrastructure scaling is prioritized over optimization
+3. All decisions are logged and explained through Explainer Agent
+
+## Performance
+
+- **Monitoring Interval**: 30 seconds for metrics collection
+- **Decision Latency**: < 5 seconds for scaling decisions
+- **Kubernetes API Calls**: Rate-limited to prevent cluster overload
+- **Memory Usage**: < 256MB typical operation
+- **CPU Usage**: < 100m typical operation
+
+## Security
+
+- **RBAC Integration**: Uses Kubernetes service accounts with minimal required permissions
+- **API Key Security**: Gemini API key stored in Kubernetes secrets
+- **Network Policies**: Supports Kubernetes network policies for traffic isolation
+- **Audit Logging**: All scaling decisions and coordination events are logged
+
+## Troubleshooting
+
+### Common Issues
+
+**Ops Guardian not starting**
 ```bash
-# Get real-time metrics
-curl http://localhost:8083/metrics | python3 -m json.tool
+# Check pod status
+kubectl get pods -l app=ops-guardian
 
-# Get scaling recommendations
-curl -X POST http://localhost:8083/scaling/decision \
-  -H "Content-Type: application/json" \
-  -d '{"service_name": "frontend"}' | python3 -m json.tool
+# Check logs
+kubectl logs deployment/ops-guardian
+
+# Verify API key
+kubectl get secret guardian-secrets -o yaml
 ```
 
-### **Test Multi-Agent Coordination**
+**Metrics not available**
 ```bash
-# Simulate fraud investigation coordination
-curl -X POST http://localhost:8083/coordination/pause \
-  -H "Content-Type: application/json" \
-  -d '{"reason": "High-priority fraud investigation active"}'
+# Check Kubernetes metrics API
+kubectl top nodes
+kubectl top pods
 
-# Check status during coordination
-curl http://localhost:8083/monitoring/status | python3 -m json.tool
-
-# Resume normal operations
-curl -X POST http://localhost:8083/coordination/resume
+# Verify RBAC permissions
+kubectl auth can-i get pods --as=system:serviceaccount:default:ops-guardian
 ```
 
----
-
-## 🔧 **Configuration**
-
-### **Environment Variables**
+**AI decisions not working**
 ```bash
-# Core Configuration
-PORT=8083                    # Service port
-LOG_LEVEL=info              # Logging level
+# Test Gemini API connectivity
+curl -H "Authorization: Bearer $GEMINI_API_KEY" \
+  "https://generativelanguage.googleapis.com/v1/models"
 
-# AI Configuration  
-GEMINI_API_KEY=your-api-key # Google Gemini API key
-GEMINI_MODEL=gemini-1.5-flash # AI model for predictions
-
-# Multi-Agent Integration
-EXPLAINER_AGENT_URL=http://explainer-agent:8082
-FINANCIAL_GUARDIAN_URL=http://financial-guardian:8081
+# Check environment variables
+kubectl describe pod -l app=ops-guardian | grep -A 10 Environment
 ```
 
-### **Kubernetes Permissions**
-The Ops Guardian requires specific Kubernetes permissions:
-- **Read**: Deployments, Pods, Metrics
-- **Write**: Deployment scaling (replica updates)
-- **ServiceAccount**: `ops-guardian-sa` with appropriate RBAC
+## Integration Points
 
----
+- **Monitors**: Kubernetes metrics API for pod and node metrics
+- **Controls**: Kubernetes deployments for scaling operations
+- **Coordinates**: Financial Guardian for fraud investigation priorities
+- **Explains**: Explainer Agent for transparent decision communication
+- **AI Analysis**: Google Gemini API for intelligent scaling decisions
 
-## 📚 **Documentation**
+## Documentation
 
-- 🏗️ **[Infrastructure Architecture](docs/INFRASTRUCTURE_GUIDE.md)** - Detailed monitoring and scaling architecture
+- **[Infrastructure Guide](docs/INFRASTRUCTURE_GUIDE.md)** - Detailed technical documentation
+- **[API Documentation](../API_DOCUMENTATION.md)** - Complete API reference
+- **[Deployment Guide](../../GUARDIAN_AI_DEPLOYMENT_GUIDE.md)** - Deployment instructions
 
----
-
-## 🎯 **Scaling Scenarios**
-
-### **Scenario 1: Morning Rush**
-```
-Time: 9:00 AM (Business Hours Start)
-AI Prediction: "Traffic spike expected - typical banking day pattern"
-Action: Proactively scale frontend and transaction services
-Result: Smooth user experience during peak hours
-```
-
-### **Scenario 2: Fraud Investigation**
-```
-Event: Financial Guardian detects critical fraud
-Coordination: Ops Guardian pauses scaling operations
-Reason: "Investigation requires stable resource allocation"
-Action: Maintain current capacity until investigation complete
-```
-
-### **Scenario 3: Weekend Optimization**
-```
-Time: Saturday 2:00 AM  
-AI Analysis: "Minimal traffic expected - safe to optimize resources"
-Action: Scale down non-essential services to save costs
-Result: 40% resource savings while maintaining availability
-```
-
----
-
-## 🏆 **Why Ops Guardian Rocks**
-
-### **🎯 Business Impact**
-- **Cost Optimization**: Intelligent scaling reduces infrastructure costs by 30-40%
-- **Performance Assurance**: Proactive scaling prevents customer-facing slowdowns
-- **Operational Efficiency**: Automated operations reduce manual DevOps workload
-
-### **🔒 Banking-Grade Reliability**
-- **High Availability**: Never scales below minimum required replicas
-- **Fraud Coordination**: Prioritizes security investigations over cost optimization
-- **Transparent Operations**: Every scaling decision is explained and logged
-
-### **🚀 Enterprise Ready**
-- **Production Proven**: Built with enterprise Kubernetes best practices
-- **Security First**: Non-root containers, RBAC, and security contexts
-- **Observability**: Comprehensive logging, metrics, and health checks
-
----
-
-## 🤖 **AI-Powered Intelligence**
-
-The Ops Guardian leverages Google Gemini AI to make intelligent scaling decisions:
-
-### **Traffic Pattern Recognition**
-- Learns from historical data to predict load patterns
-- Understands banking-specific traffic (payroll days, month-end, holidays)
-- Factors in external events and seasonal variations
-
-### **Resource Optimization**
-- Balances performance requirements with cost efficiency
-- Considers service dependencies and cascade effects
-- Optimizes for both response time and resource utilization
-
-### **Predictive Scaling**
-- Scales up before performance degrades
-- Identifies potential issues before they impact users
-- Provides confidence scores for all scaling decisions
-
----
-
-The Ops Guardian Agent transforms your infrastructure from reactive to **proactive**, ensuring your Bank of Anthos deployment is always performing optimally while coordinating seamlessly with your other Guardian AI agents! 🚀
-
-**Ready to let AI manage your infrastructure?** Deploy the Ops Guardian and watch it work its magic! ✨
+The Ops Guardian Agent ensures your Bank of Anthos infrastructure remains performant, cost-effective, and responsive to business needs while maintaining coordination with other Guardian agents for optimal system-wide operation.

@@ -1,40 +1,40 @@
-# 🛡️ Guardian Command Center Dashboard
+# Guardian Command Center Dashboard
 
 **Real-time AI Agent Conversation & Monitoring Dashboard**
 
-The Guardian Command Center is a **Netflix-style, mission-control dashboard** that visualizes real-time communication between your AI Guardian agents. Watch as Financial Guardian, Ops Guardian, and Explainer Agent coordinate like a elite cyber-security team!
+The Guardian Command Center is a professional mission-control dashboard that visualizes real-time communication between AI Guardian agents. It provides comprehensive monitoring of Financial Guardian, Ops Guardian, and Explainer Agent coordination and activities.
 
 ---
 
-## 🎯 **What Makes This Special?**
+## What Makes This Special
 
-### **🗣️ Live Agent Conversations**
-- **Real-time chat feed** showing agents "talking" to each other
-- **Correlation tracking** links related events across agents
-- **Human-like messages** make AI coordination transparent
-- **Multi-agent scenarios** show complex coordination patterns
+### Live Agent Conversations
+- Real-time chat feed showing agents communicating with each other
+- Correlation tracking that links related events across agents
+- Human-readable messages that make AI coordination transparent
+- Multi-agent scenarios that show complex coordination patterns
 
-### **📡 API Monitoring**
-- **Live API call visualization** with request/response data
-- **Performance metrics** (response time, status codes)
-- **Real-time debugging** of agent interactions
-- **JSON payload inspection** for deep troubleshooting
+### API Monitoring
+- Live API call visualization with request/response data
+- Performance metrics including response time and status codes
+- Real-time debugging of agent interactions
+- JSON payload inspection for deep troubleshooting
 
-### **🎮 Interactive Demo Scenarios**
-- **One-click demos** showcase multi-agent coordination
-- **Scripted scenarios** perfect for presentations
-- **Realistic timing** with authentic agent interactions
-- **Expected outcomes** validation
+### Interactive Demo Scenarios
+- One-click demos that showcase multi-agent coordination
+- Scripted scenarios perfect for presentations
+- Realistic timing with authentic agent interactions
+- Expected outcomes validation
 
-### **📊 System Overview**
-- **Agent health monitoring** with live status indicators
-- **Correlation statistics** showing system coordination
-- **Uptime tracking** and performance metrics
-- **WebSocket real-time updates** for instant feedback
+### System Overview
+- Agent health monitoring with live status indicators
+- Correlation statistics showing system coordination
+- Uptime tracking and performance metrics
+- WebSocket real-time updates for instant feedback
 
 ---
 
-## 🏗️ **Architecture**
+## Architecture
 
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
@@ -58,9 +58,9 @@ The Guardian Command Center is a **Netflix-style, mission-control dashboard** th
 
 ---
 
-## 🚀 **Quick Start**
+## Quick Start
 
-### **1. Deploy Dashboard**
+### 1. Deploy Dashboard
 ```bash
 # Deploy to Kubernetes
 kubectl apply -f k8s/deployment.yaml
@@ -69,7 +69,7 @@ kubectl apply -f k8s/deployment.yaml
 skaffold dev -f skaffold.yaml
 ```
 
-### **2. Access Dashboard**
+### 2. Access Dashboard
 ```bash
 # Port forward for local access
 kubectl port-forward service/guardian-dashboard 8080:8080
@@ -78,17 +78,17 @@ kubectl port-forward service/guardian-dashboard 8080:8080
 open http://localhost:8080
 ```
 
-### **3. Run Demo Scenarios**
+### 3. Run Demo Scenarios
 Click the demo buttons in the dashboard:
-- 🚨 **Fraud Coordination**: Financial Guardian detects fraud, coordinates with Ops
-- 📈 **Proactive Scaling**: Ops Guardian predicts and prevents performance issues  
-- ⚖️ **Priority Resolution**: Agents resolve conflicting priorities intelligently
+- **Fraud Coordination**: Financial Guardian detects fraud, coordinates with Ops
+- **Proactive Scaling**: Ops Guardian predicts and prevents performance issues  
+- **Priority Resolution**: Agents resolve conflicting priorities intelligently
 
 ---
 
-## 🎮 **Demo Scenarios**
+## Demo Scenarios
 
-### **🚨 Fraud Detection Coordination**
+### Fraud Detection Coordination
 **What happens:**
 1. Financial Guardian detects suspicious $50,000 transaction
 2. Requests coordination with Ops Guardian
@@ -98,7 +98,7 @@ Click the demo buttons in the dashboard:
 
 **Expected outcome:** Transaction blocked, scaling paused, user informed
 
-### **📈 Proactive Traffic Scaling**
+### Proactive Traffic Scaling
 **What happens:**
 1. Ops Guardian detects approaching lunch rush pattern
 2. AI recommends proactive scaling before performance degrades
@@ -108,7 +108,7 @@ Click the demo buttons in the dashboard:
 
 **Expected outcome:** Services scaled, performance maintained, users happy
 
-### **⚖️ Multi-Agent Priority Resolution**
+### Multi-Agent Priority Resolution
 **What happens:**
 1. Financial Guardian needs resources for fraud investigation
 2. Ops Guardian detects high traffic requiring scaling
@@ -131,7 +131,7 @@ dashboard_client.set_agent_name("financial-guardian")
 
 # Log conversations
 await log_conversation(
-    "🚨 Fraud detected on transaction tx_123",
+    "Fraud detected on transaction tx_123",
     to_agent="ops-guardian", 
     correlation_id="corr_abc123"
 )
@@ -250,7 +250,7 @@ GET /api/correlations/{correlation_id}
 open http://localhost:8080
 
 # 2. Run fraud coordination demo
-# Click "🚨 Fraud Coordination" button
+# Click "Fraud Coordination" button
 
 # 3. Show real-time agent conversations
 # Point out correlation IDs linking related events
@@ -259,7 +259,7 @@ open http://localhost:8080
 # Highlight request/response data and performance metrics
 
 # 5. Run scaling demo
-# Click "📈 Proactive Scaling" button
+# Click " Proactive Scaling" button
 
 # 6. Explain multi-agent intelligence
 # Show how agents coordinate and resolve conflicts
@@ -267,7 +267,7 @@ open http://localhost:8080
 
 ---
 
-## 🔧 **Development**
+## **Development**
 
 ### **Local Development**
 ```bash
@@ -311,46 +311,3 @@ kubectl apply -f k8s/deployment.yaml
 
 # Update root Skaffold config
 # (Already included in bank-of-anthos/skaffold.yaml)
-```
-
----
-
-## 🏆 **Innovation Highlights**
-
-### **🎯 What Makes This Unique:**
-
-1. **First-of-its-Kind**: Real-time AI agent conversation visualization
-2. **Mission Control UX**: Netflix-quality UI for enterprise AI systems
-3. **True Multi-Agent**: Shows actual coordination, not just individual AI responses
-4. **Production Ready**: Full Kubernetes integration, health checks, monitoring
-5. **Demo Perfect**: One-click scenarios ideal for hackathon presentations
-
-### **🚀 Technical Innovation:**
-
-- **Event Correlation Engine**: Links related events across multiple AI agents
-- **Real-time WebSocket Architecture**: Sub-second updates for live monitoring  
-- **Intelligent Demo Scenarios**: Realistic multi-agent coordination patterns
-- **Comprehensive API Monitoring**: Full request/response lifecycle tracking
-- **Agent Health Management**: Automatic monitoring and status updates
-
----
-
-## 📈 **Business Impact Demonstration**
-
-The dashboard clearly shows:
-
-- **💰 Fraud Prevention**: Real dollars saved through AI-powered fraud detection
-- **⚡ Performance Optimization**: Proactive scaling preventing service degradation  
-- **🤝 Intelligent Coordination**: AI agents working together like a elite team
-- **📊 Operational Transparency**: Clear visibility into AI decision-making
-- **🎯 System Reliability**: Multi-agent redundancy and conflict resolution
-
-**Perfect for demonstrating Innovation & Creativity (20%) scoring criteria!** 🏆
-
----
-
-## 🎬 **Ready for Your Demo!**
-
-This Guardian Command Center dashboard transforms your hackathon project from "just another AI service" into a **visually stunning, technically impressive, production-ready multi-agent AI system** that judges will remember!
-
-**Deploy it, run the demos, and watch the magic happen!** ✨

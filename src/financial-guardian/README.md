@@ -35,32 +35,32 @@ Financial Guardian is a containerized microservice designed to enhance banking s
 
 ## Features
 
-### 🛡️ Real-time Fraud Detection
+### Real-time Fraud Detection
 - Analyzes transactions as they occur
 - Sub-second response times for critical decisions
 - Continuous monitoring capabilities
 
-### 🤖 AI-Powered Analysis
+### AI-Powered Analysis
 - Google Gemini AI integration for sophisticated pattern recognition
 - Natural language explanations for fraud decisions
 - Adaptive learning from transaction patterns
 
-### 📊 Risk Scoring System
+### Risk Scoring System
 - Comprehensive risk assessment (0.0 - 1.0 scale)
 - Detailed explanations and red flag identification
 - Actionable recommendations (ALLOW/REVIEW/BLOCK)
 
-### 👤 User Behavior Profiling
+### User Behavior Profiling
 - Historical transaction pattern analysis
 - Anomaly detection based on user behavior
 - Dynamic profile updates
 
-### 🔌 RESTful API
+### RESTful API
 - Easy integration with existing banking systems
 - Comprehensive endpoint coverage
 - Standardized JSON responses
 
-### ⚡ High Performance
+### High Performance
 - Kubernetes-native architecture
 - Horizontal scaling capabilities
 - Optimized for high-volume processing
@@ -322,6 +322,15 @@ This will demonstrate:
       "Unusual transaction time (4:42 AM might be outside typical activity patterns)"
     ],
     "recommendation": "BLOCK"
+  },
+  "user_explanation": {
+    "title": "Transaction Blocked",
+    "summary": "Your $50,000 transaction to Suspicious Store was blocked",
+    "explanation": "We blocked this transaction because it's 250× larger than your usual $200 purchases.",
+    "next_steps": [
+      "If this was you, please verify via the mobile app or call us",
+      "If this wasn't you, your account is secure - no action needed"
+    ]
   }
 }
 ```
