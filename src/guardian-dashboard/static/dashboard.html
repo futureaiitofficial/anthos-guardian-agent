@@ -681,7 +681,7 @@
             }, false);
 
             try {
-                const fraudResponse = await fetch('http://financial-guardian:8081/fraud/check', {
+                const fraudResponse = await fetch('/api/financial-guardian/fraud/check', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
@@ -745,7 +745,7 @@
 
             // Step 2: Try Ops Guardian coordination
             try {
-                const opsResponse = await fetch('http://ops-guardian:8083/coordination/pause', {
+                const opsResponse = await fetch('/api/ops-guardian/coordination/pause', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
@@ -804,7 +804,7 @@
             const correlationId = 'traffic-demo-' + Date.now();
             
             try {
-                const metricsResponse = await fetch('http://ops-guardian:8083/metrics', {
+                const metricsResponse = await fetch('/api/ops-guardian/metrics', {
                     method: 'GET'
                 });
 
@@ -883,7 +883,7 @@
             await new Promise(resolve => setTimeout(resolve, 1500));
 
             try {
-                const resolutionResponse = await fetch('http://explainer-agent:8082/explain/multi-agent-scenario', {
+                const resolutionResponse = await fetch('/api/explainer-agent/explain/multi-agent-scenario', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({

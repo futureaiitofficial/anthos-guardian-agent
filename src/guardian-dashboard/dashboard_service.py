@@ -14,7 +14,7 @@ from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict
 from collections import defaultdict, deque
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, BackgroundTasks
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, BackgroundTasks, Request, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -453,6 +453,70 @@ async def _execute_demo_scenario(scenario: DemoScenario):
 async def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "service": "guardian-dashboard"}
+
+# API Proxy Routes for Guardian Agents
+
+@app.post("/api/financial-guardian/fraud/check")
+async def proxy_financial_guardian_fraud_check(request: Request):
+    """Proxy fraud check requests to Financial Guardian"""
+    try:
+        body = await request.json()
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "http://financial-guardian:8081/fraud/check",
+                json=body,
+                timeout=30.0
+            )
+            return response.json()
+    except Exception as e:
+        logger.error("Error proxying to Financial Guardian", error=str(e))
+        raise HTTPException(status_code=503, detail=f"Financial Guardian unavailable: {str(e)}")
+
+@app.get("/api/ops-guardian/metrics")
+async def proxy_ops_guardian_metrics():
+    """Proxy metrics requests to Ops Guardian"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                "http://ops-guardian:8083/metrics",
+                timeout=30.0
+            )
+            return response.json()
+    except Exception as e:
+        logger.error("Error proxying to Ops Guardian metrics", error=str(e))
+        raise HTTPException(status_code=503, detail=f"Ops Guardian metrics unavailable: {str(e)}")
+
+@app.post("/api/ops-guardian/coordination/pause")
+async def proxy_ops_guardian_pause(request: Request):
+    """Proxy coordination pause requests to Ops Guardian"""
+    try:
+        body = await request.json()
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "http://ops-guardian:8083/coordination/pause",
+                json=body,
+                timeout=30.0
+            )
+            return response.json()
+    except Exception as e:
+        logger.error("Error proxying to Ops Guardian coordination", error=str(e))
+        raise HTTPException(status_code=503, detail=f"Ops Guardian coordination unavailable: {str(e)}")
+
+@app.post("/api/explainer-agent/explain/multi-agent-scenario")
+async def proxy_explainer_agent_scenario(request: Request):
+    """Proxy multi-agent scenario requests to Explainer Agent"""
+    try:
+        body = await request.json()
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "http://explainer-agent:8082/explain/multi-agent-scenario",
+                json=body,
+                timeout=30.0
+            )
+            return response.json()
+    except Exception as e:
+        logger.error("Error proxying to Explainer Agent", error=str(e))
+        raise HTTPException(status_code=503, detail=f"Explainer Agent unavailable: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn
