@@ -431,18 +431,6 @@
                 </div>
                 <div class="stats-bar">
                     <div class="stat">
-                        <div class="stat-number" id="total-conversations">0</div>
-                        <div class="stat-label">Conversations</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-number" id="total-api-calls">0</div>
-                        <div class="stat-label">API Calls</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-number" id="active-correlations">0</div>
-                        <div class="stat-label">Active Correlations</div>
-                    </div>
-                    <div class="stat">
                         <div class="stat-number" id="uptime">00:00</div>
                         <div class="stat-label">Uptime</div>
                     </div>
@@ -520,9 +508,6 @@
             
             // Load API calls
             data.api_calls.forEach(call => addAPICall(call, false));
-            
-            // Update stats
-            updateStats(data);
             
             // Update agent states
             Object.values(data.agent_states).forEach(state => updateAgentStatus(state));
@@ -1148,11 +1133,7 @@
             }, 10000);
         }
 
-        function updateStats(data) {
-            document.getElementById('total-conversations').textContent = data.total_conversations || 0;
-            document.getElementById('total-api-calls').textContent = data.total_api_calls || 0;
-            document.getElementById('active-correlations').textContent = data.active_correlations || 0;
-        }
+        // Stats update function removed - only uptime remains
 
         function updateUptime() {
             const elapsed = Math.floor((Date.now() - startTime) / 1000);
