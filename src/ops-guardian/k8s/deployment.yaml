@@ -1,0 +1,145 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ops-guardian
+  labels:
+    app: ops-guardian
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ops-guardian
+  template:
+    metadata:
+      labels:
+        app: ops-guardian
+        version: v1
+    spec:
+      serviceAccountName: ops-guardian-sa
+      terminationGracePeriodSeconds: 5
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+      containers:
+      - name: ops-guardian
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          privileged: false
+          readOnlyRootFilesystem: true
+        image: us-central1-docker.pkg.dev/PROJECT_ID/bank-guardian-repo/ops-guardian
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8083
+          name: http
+          protocol: TCP
+        env:
+        - name: VERSION
+          value: v1.0.0
+        - name: PORT
+          value: "8083"
+        - name: LOG_LEVEL
+          value: info
+        - name: GEMINI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: guardian-secrets
+              key: GEMINI_API_KEY
+        - name: GEMINI_MODEL
+          value: gemini-1.5-flash
+        - name: EXPLAINER_AGENT_URL
+          value: http://explainer-agent:8082
+        - name: FINANCIAL_GUARDIAN_URL
+          value: http://financial-guardian:8081
+        envFrom:
+        - configMapRef:
+            name: environment-config
+        resources:
+          limits:
+            cpu: 500m
+            ephemeral-storage: 0.25Gi
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            ephemeral-storage: 0.25Gi
+            memory: 256Mi
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8083
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthy
+            port: 8083
+          initialDelaySeconds: 120
+          periodSeconds: 15
+          timeoutSeconds: 10
+        volumeMounts:
+        - name: tmp-dir
+          mountPath: /tmp
+      volumes:
+      - name: tmp-dir
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ops-guardian
+  labels:
+    app: ops-guardian
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8083
+    targetPort: 8083
+  selector:
+    app: ops-guardian
+---
+# Service Account for Kubernetes API access
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ops-guardian-sa
+  labels:
+    app: ops-guardian
+---
+# ClusterRole for monitoring and scaling operations
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ops-guardian-role
+rules:
+# Permissions to read deployments and pods for monitoring
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get", "list", "watch", "patch", "update"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+# Permissions to read metrics (if metrics-server is available)
+- apiGroups: ["metrics.k8s.io"]
+  resources: ["pods", "nodes"]
+  verbs: ["get", "list"]
+---
+# Bind the ClusterRole to the ServiceAccount
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: ops-guardian-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: ops-guardian-role
+subjects:
+- kind: ServiceAccount
+  name: ops-guardian-sa
+  namespace: default

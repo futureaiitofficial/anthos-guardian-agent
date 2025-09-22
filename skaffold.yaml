@@ -41,5 +41,8 @@ requires:
 - configs:
   - explainer-agent
   path: src/explainer-agent/skaffold.yaml
+- configs:
+  - ops-guardian
+  path: src/ops-guardian/skaffold.yaml
 deploy:
   tolerateFailuresUntilDeadline: true

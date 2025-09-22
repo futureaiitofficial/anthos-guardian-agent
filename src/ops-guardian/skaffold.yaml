@@ -1,0 +1,43 @@
+apiVersion: skaffold/v4beta7
+kind: Config
+metadata:
+  name: ops-guardian
+build:
+  artifacts:
+  - image: ops-guardian
+    context: .
+    docker:
+      dockerfile: Dockerfile
+  tagPolicy:
+    gitCommit: {}
+test:
+- image: ops-guardian
+  custom:
+  - command: python3 -m py_compile ops_guardian.py
+    timeoutSeconds: 60
+deploy:
+  kubectl:
+    manifests:
+    - k8s/deployment.yaml
+profiles:
+- name: development
+  activation:
+  - env: ENV=development
+  deploy:
+    kubectl:
+      manifests:
+      - k8s/deployment.yaml
+- name: staging  
+  activation:
+  - env: ENV=staging
+  deploy:
+    kubectl:
+      manifests:
+      - k8s/deployment.yaml
+- name: production
+  activation:
+  - env: ENV=production
+  deploy:
+    kubectl:
+      manifests:
+      - k8s/deployment.yaml
