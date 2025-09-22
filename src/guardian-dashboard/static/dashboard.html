@@ -981,16 +981,17 @@
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
-                        event_type: 'proactive_scaling',
+                        event_type: 'system_scaling',
                         source_service: 'ops-guardian',
                         severity: 'medium',
                         context: {
-                            service: 'frontend',
-                            old_replicas: 2,
-                            new_replicas: 4,
-                            reason: 'lunch_rush_prediction',
+                            service_name: 'frontend',
+                            from_replicas: 2,
+                            to_replicas: 4,
+                            trigger: 'AI prediction - lunch rush pattern',
                             cpu_usage: 75,
-                            memory_usage: 68
+                            memory_usage: 68,
+                            prediction_confidence: 0.85
                         },
                         audience: 'operators',
                         correlation_id: correlationId
@@ -1006,7 +1007,7 @@
                         from_agent: 'explainer-agent',
                         to_agent: 'operators',
                         message_type: 'scaling_explanation',
-                        content: `PROACTIVE SCALING EXPLAINED: ${explanation.explanation_text || explanation.summary || 'AI predicted lunch rush traffic and scaled frontend proactively to prevent customer delays.'}`,
+                        content: `PROACTIVE SCALING EXPLAINED: ${explanation.explanation?.summary || explanation.explanation?.details || explanation.summary || explanation.explanation_text || 'AI predicted lunch rush traffic and scaled frontend proactively to prevent customer delays.'}`,
                         correlation_id: correlationId,
                         metadata: {real_response: true, explanation: explanation}
                     }, false);
@@ -1062,12 +1063,14 @@
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
-                        event_type: 'multi_agent_conflict',
+                        event_type: 'agent_coordination',
                         source_service: 'coordinator-agent',
                         severity: 'high',
                         context: {
-                            scenario_type: 'resource_conflict',
+                            coordination_type: 'resource_conflict',
                             involved_agents: ['financial-guardian', 'ops-guardian'],
+                            decision: 'Fraud investigation takes precedence over scaling',
+                            reasoning: 'Financial security has higher priority than performance optimization during active investigations',
                             priority: 'fraud_investigation',
                             resource_constraint: true
                         },
@@ -1085,7 +1088,7 @@
                         from_agent: 'explainer-agent',
                         to_agent: 'all-agents',
                         message_type: 'conflict_resolution',
-                        content: `REAL RESOLUTION: ${resolution.explanation_text || resolution.summary || JSON.stringify(resolution).substring(0, 200) || 'Priority decision: Fraud investigation takes precedence. Implementing selective scaling with resource reservation.'}`,
+                        content: `REAL RESOLUTION: ${resolution.explanation?.summary || resolution.explanation?.details || resolution.summary || resolution.explanation_text || 'Priority decision: Fraud investigation takes precedence. Implementing selective scaling with resource reservation.'}`,
                         correlation_id: correlationId,
                         metadata: {real_response: true, resolution: resolution}
                     }, false);
