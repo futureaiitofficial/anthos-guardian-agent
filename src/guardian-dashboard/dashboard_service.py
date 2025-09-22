@@ -105,7 +105,9 @@ class GuardianDashboard:
             self.active_correlations[message.correlation_id].append(message)
             
         # Broadcast to all connected WebSocket clients
-        await self._broadcast_update("conversation", message.dict())
+        message_dict = message.dict()
+        message_dict['timestamp'] = message_dict['timestamp'].isoformat()
+        await self._broadcast_update("conversation", message_dict)
         
         logger.info("Agent conversation logged", 
                    from_agent=message.from_agent,
@@ -121,7 +123,9 @@ class GuardianDashboard:
             self.active_correlations[api_call.correlation_id].append(api_call)
             
         # Broadcast to WebSocket clients
-        await self._broadcast_update("api_call", api_call.dict())
+        api_call_dict = api_call.dict()
+        api_call_dict['timestamp'] = api_call_dict['timestamp'].isoformat()
+        await self._broadcast_update("api_call", api_call_dict)
         
         logger.info("API call logged",
                    service=api_call.service,
@@ -132,7 +136,9 @@ class GuardianDashboard:
     async def update_agent_state(self, state: AgentState):
         """Update agent state"""
         self.agent_states[state.agent_name] = state
-        await self._broadcast_update("agent_state", state.dict())
+        state_dict = state.dict()
+        state_dict['last_update'] = state_dict['last_update'].isoformat()
+        await self._broadcast_update("agent_state", state_dict)
         
         logger.info("Agent state updated", 
                    agent=state.agent_name, 
