@@ -128,6 +128,9 @@ class FraudDetector:
                     start_idx = response_text.find(start_marker)
                     if start_idx != -1:
                         start_idx += len(start_marker)
+                        # Skip the newline after ```json
+                        if start_idx < len(response_text) and response_text[start_idx] == '\n':
+                            start_idx += 1
                         end_idx = response_text.find(end_marker, start_idx)
                         if end_idx != -1:
                             response_text = response_text[start_idx:end_idx]
