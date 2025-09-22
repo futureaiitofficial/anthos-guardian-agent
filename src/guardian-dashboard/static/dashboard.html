@@ -910,7 +910,7 @@
                         from_agent: 'explainer-agent',
                         to_agent: 'all-agents',
                         message_type: 'conflict_resolution',
-                        content: `REAL RESOLUTION: ${resolution.explanation || 'Priority decision: Fraud investigation takes precedence. Implementing selective scaling with resource reservation.'}`,
+                        content: `REAL RESOLUTION: ${resolution.explanation_text || resolution.summary || JSON.stringify(resolution).substring(0, 200) || 'Priority decision: Fraud investigation takes precedence. Implementing selective scaling with resource reservation.'}`,
                         correlation_id: correlationId,
                         metadata: {real_response: true, resolution: resolution}
                     }, false);
