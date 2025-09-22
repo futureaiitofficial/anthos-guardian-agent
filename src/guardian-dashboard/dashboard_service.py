@@ -330,7 +330,7 @@ async def get_correlation_data(correlation_id: str):
 DEMO_SCENARIOS = [
     DemoScenario(
         id="fraud_coordination",
-        name="🚨 Fraud Detection Coordination",
+        name="Fraud Detection Coordination",
         description="Financial Guardian detects fraud, coordinates with Ops Guardian to pause scaling",
         steps=[
             {"action": "fraud_detection", "agent": "financial-guardian", "description": "Detect suspicious $50,000 transaction"},
@@ -342,7 +342,7 @@ DEMO_SCENARIOS = [
     ),
     DemoScenario(
         id="traffic_prediction",
-        name="📈 Proactive Scaling",
+        name="Proactive Infrastructure Scaling",
         description="Ops Guardian predicts lunch rush, scales proactively",
         steps=[
             {"action": "pattern_detection", "agent": "ops-guardian", "description": "Detect approaching lunch rush pattern"},
@@ -354,7 +354,7 @@ DEMO_SCENARIOS = [
     ),
     DemoScenario(
         id="multi_agent_conflict",
-        name="⚖️ Priority Resolution",
+        name="Multi-Agent Priority Resolution",
         description="Agents have conflicting priorities, coordination resolves conflict",
         steps=[
             {"action": "fraud_investigation", "agent": "financial-guardian", "description": "Start fraud investigation (needs resources)"},
@@ -373,13 +373,17 @@ async def get_demo_scenarios():
 
 @app.post("/api/demo-scenarios/{scenario_id}/run")
 async def run_demo_scenario(scenario_id: str, background_tasks: BackgroundTasks):
-    """Run a demo scenario"""
-    scenario = next((s for s in DEMO_SCENARIOS if s.id == scenario_id), None)
-    if not scenario:
-        return {"error": "Scenario not found"}
-    
-    background_tasks.add_task(_execute_demo_scenario, scenario)
-    return {"status": "started", "scenario": scenario.dict()}
+    """Deprecated: Use real agent APIs directly"""
+    return {
+        "error": "Simulated demos are disabled. Use real Guardian agent APIs only.",
+        "message": "Call Financial Guardian, Ops Guardian, and Explainer Agent APIs directly",
+        "real_endpoints": {
+            "financial_guardian": "http://financial-guardian:8081/fraud/check",
+            "ops_guardian": "http://ops-guardian:8083/metrics", 
+            "explainer_agent": "http://explainer-agent:8082/explain/event"
+        },
+        "scenario_requested": scenario_id
+    }
 
 async def _execute_demo_scenario(scenario: DemoScenario):
     """Execute a demo scenario with realistic timing"""
@@ -394,7 +398,7 @@ async def _execute_demo_scenario(scenario: DemoScenario):
         from_agent="demo-system",
         to_agent="all-agents",
         message_type="scenario_start",
-        content=f"🎬 Starting demo scenario: {scenario.name}",
+        content=f"Starting demo scenario: {scenario.name}",
         correlation_id=correlation_id,
         metadata={"scenario_id": scenario.id}
     ))
@@ -440,7 +444,7 @@ async def _execute_demo_scenario(scenario: DemoScenario):
         from_agent="demo-system",
         to_agent="all-agents",
         message_type="scenario_complete",
-        content=f"✅ Demo scenario completed: {scenario.name}",
+        content=f"Demo scenario completed: {scenario.name}",
         correlation_id=correlation_id,
         metadata={"outcomes": scenario.expected_outcomes}
     ))
