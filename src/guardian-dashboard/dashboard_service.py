@@ -168,10 +168,31 @@ class GuardianDashboard:
     
     async def get_dashboard_data(self) -> Dict[str, Any]:
         """Get current dashboard data"""
+        # Serialize conversations with proper datetime handling
+        conversations = []
+        for msg in list(self.conversations)[-50:]:
+            msg_dict = msg.dict()
+            msg_dict['timestamp'] = msg_dict['timestamp'].isoformat()
+            conversations.append(msg_dict)
+        
+        # Serialize API calls with proper datetime handling
+        api_calls = []
+        for call in list(self.api_calls)[-50:]:
+            call_dict = call.dict()
+            call_dict['timestamp'] = call_dict['timestamp'].isoformat()
+            api_calls.append(call_dict)
+        
+        # Serialize agent states with proper datetime handling
+        agent_states = {}
+        for name, state in self.agent_states.items():
+            state_dict = state.dict()
+            state_dict['last_update'] = state_dict['last_update'].isoformat()
+            agent_states[name] = state_dict
+        
         return {
-            "conversations": [msg.dict() for msg in list(self.conversations)[-50:]],  # Last 50
-            "api_calls": [call.dict() for call in list(self.api_calls)[-50:]],       # Last 50
-            "agent_states": {name: state.dict() for name, state in self.agent_states.items()},
+            "conversations": conversations,
+            "api_calls": api_calls,
+            "agent_states": agent_states,
             "active_correlations": len(self.active_correlations),
             "total_conversations": len(self.conversations),
             "total_api_calls": len(self.api_calls)
@@ -289,9 +310,19 @@ async def get_dashboard_data():
 async def get_correlation_data(correlation_id: str):
     """Get all events for a correlation ID"""
     events = dashboard.active_correlations.get(correlation_id, [])
+    serialized_events = []
+    for event in events:
+        if hasattr(event, 'dict'):
+            event_dict = event.dict()
+            if 'timestamp' in event_dict and hasattr(event_dict['timestamp'], 'isoformat'):
+                event_dict['timestamp'] = event_dict['timestamp'].isoformat()
+            serialized_events.append(event_dict)
+        else:
+            serialized_events.append(event)
+    
     return {
         "correlation_id": correlation_id,
-        "events": [event.dict() if hasattr(event, 'dict') else event for event in events],
+        "events": serialized_events,
         "count": len(events)
     }
 
