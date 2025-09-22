@@ -48,10 +48,23 @@ class FraudDetector:
     """AI-powered fraud detection using Google Gemini"""
     
     def __init__(self, api_key: str, model: str = "gemini-pro"):
-        genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel(model)
+        self.api_key = api_key
+        self.model_name = model
+        self.model = None
         self.user_profiles = {}  # Cache for user transaction patterns
         self.profile_lock = Lock()
+        self.ai_available = False
+        
+        # Initialize AI lazily to avoid startup timeouts
+        if api_key and api_key != "dummy":
+            try:
+                genai.configure(api_key=api_key)
+                self.model = genai.GenerativeModel(model)
+                self.ai_available = True
+                logger.info("Gemini AI configured successfully")
+            except Exception as e:
+                logger.warning("Gemini AI initialization failed, using fallback mode", error=str(e))
+                self.ai_available = False
         
     def analyze_transaction(self, transaction: Dict, user_history: List[Dict]) -> Dict[str, Any]:
         """
@@ -64,6 +77,11 @@ class FraudDetector:
         Returns:
             Dict with fraud_score, risk_level, and explanation
         """
+        # Use AI if available, otherwise use fallback
+        if not self.ai_available or not self.model:
+            logger.info("Using fallback analysis (AI not available)")
+            return self._fallback_analysis(transaction, user_history)
+        
         try:
             # Build context for AI analysis
             context = self._build_analysis_context(transaction, user_history)
@@ -112,7 +130,7 @@ class FraudDetector:
                 return self._fallback_analysis(transaction, user_history)
                 
         except Exception as e:
-            logger.error("Error in AI fraud analysis", error=str(e))
+            logger.error("Error in AI fraud analysis, using fallback", error=str(e))
             return self._fallback_analysis(transaction, user_history)
     
     def _build_analysis_context(self, transaction: Dict, history: List[Dict]) -> Dict:
