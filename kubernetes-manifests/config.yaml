@@ -19,6 +19,11 @@ metadata:
 data:
   LOCAL_ROUTING_NUM: "883745000"
   PUB_KEY_PATH: "/tmp/.ssh/publickey"
+  # Disable Google Cloud tracing for local development
+  ENABLE_TRACING: "false"
+  ENABLE_METRICS: "false"
+  # Set local environment
+  ENV: "local"
 ---
 apiVersion: v1
 kind: ConfigMap

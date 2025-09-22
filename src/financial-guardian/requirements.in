@@ -1,0 +1,29 @@
+# Core web framework
+flask>=2.3.0
+gunicorn>=21.2.0
+
+# HTTP client for API calls
+requests>=2.31.0
+
+# Google AI integration
+google-generativeai>=0.3.0
+
+# JWT handling for authentication
+pyjwt>=2.8.0
+cryptography>=41.0.0
+
+# Async support
+aiohttp>=3.8.0
+
+# Logging and monitoring
+structlog>=23.1.0
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Configuration management
+python-dotenv>=1.0.0
+
+# Kubernetes client (for health checks)
+kubernetes>=27.2.0

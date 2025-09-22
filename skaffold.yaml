@@ -34,5 +34,9 @@ requires:
 - configs:
   - ledger-db
   path: src/ledger/ledger-db/skaffold.yaml
+# Bank Guardian AI Services
+- configs:
+  - financial-guardian
+  path: src/financial-guardian/skaffold.yaml
 deploy:
   tolerateFailuresUntilDeadline: true
