@@ -116,17 +116,29 @@ class FraudDetector:
             
             response = self.model.generate_content(prompt)
             
-            # Parse AI response
+            # Parse AI response - handle markdown-wrapped JSON
             try:
-                result = json.loads(response.text)
+                response_text = response.text.strip()
+                
+                # Strip markdown code blocks if present
+                if response_text.startswith('```json'):
+                    response_text = response_text.replace('```json\n', '').replace('\n```', '')
+                elif response_text.startswith('```'):
+                    response_text = response_text.replace('```\n', '').replace('\n```', '')
+                
+                # Clean up any remaining markdown formatting
+                response_text = response_text.strip()
+                
+                result = json.loads(response_text)
                 logger.info("AI fraud analysis completed", 
                            transaction_id=transaction.get('uuid', 'unknown'),
                            fraud_score=result.get('fraud_score', 0),
                            risk_level=result.get('risk_level', 'UNKNOWN'))
                 return result
-            except json.JSONDecodeError:
+            except json.JSONDecodeError as e:
                 logger.warning("AI response not valid JSON, using fallback", 
-                              response=response.text)
+                              response=response.text,
+                              error=str(e))
                 return self._fallback_analysis(transaction, user_history)
                 
         except Exception as e:
