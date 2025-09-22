@@ -699,10 +699,10 @@
                     const fraudResult = await fraudResponse.json();
                     
                     // Log the API call
-                    addApiCall({
+                    addAPICall({
                         id: Date.now().toString(),
                         timestamp: new Date().toISOString(),
-                        agent_name: 'financial-guardian',
+                        service: 'financial-guardian',
                         method: 'POST',
                         endpoint: '/fraud/check',
                         request_data: {amount: 50000, merchant: 'Suspicious Electronics Store'},
@@ -758,18 +758,18 @@
                 if (opsResponse.ok) {
                     const opsResult = await opsResponse.json();
                     
-                    addApiCall({
-                        id: Date.now().toString(),
-                        timestamp: new Date().toISOString(),
-                        agent_name: 'ops-guardian',
-                        method: 'POST',
-                        endpoint: '/coordination/pause',
-                        request_data: {reason: 'fraud_investigation'},
-                        response_data: opsResult,
-                        status_code: 200,
-                        duration_ms: 890,
-                        correlation_id: correlationId
-                    }, false);
+                        addAPICall({
+                            id: Date.now().toString(),
+                            timestamp: new Date().toISOString(),
+                            service: 'ops-guardian',
+                            method: 'POST',
+                            endpoint: '/coordination/pause',
+                            request_data: {reason: 'fraud_investigation'},
+                            response_data: opsResult,
+                            status_code: 200,
+                            duration_ms: 890,
+                            correlation_id: correlationId
+                        }, false);
 
                     addConversation({
                         id: Date.now().toString(),
@@ -811,18 +811,18 @@
                 if (metricsResponse.ok) {
                     const metrics = await metricsResponse.json();
                     
-                    addApiCall({
-                        id: Date.now().toString(),
-                        timestamp: new Date().toISOString(),
-                        agent_name: 'ops-guardian',
-                        method: 'GET',
-                        endpoint: '/metrics',
-                        request_data: {},
-                        response_data: metrics,
-                        status_code: 200,
-                        duration_ms: 234,
-                        correlation_id: correlationId
-                    }, false);
+                        addAPICall({
+                            id: Date.now().toString(),
+                            timestamp: new Date().toISOString(),
+                            service: 'ops-guardian',
+                            method: 'GET',
+                            endpoint: '/metrics',
+                            request_data: {},
+                            response_data: metrics,
+                            status_code: 200,
+                            duration_ms: 234,
+                            correlation_id: correlationId
+                        }, false);
 
                     addConversation({
                         id: Date.now().toString(),
@@ -883,13 +883,20 @@
             await new Promise(resolve => setTimeout(resolve, 1500));
 
             try {
-                const resolutionResponse = await fetch('/api/explainer-agent/explain/multi-agent-scenario', {
+                const resolutionResponse = await fetch('/api/explainer-agent/explain/event', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
-                        scenario_type: 'resource_conflict',
-                        involved_agents: ['financial-guardian', 'ops-guardian'],
-                        context: {priority: 'fraud_investigation', resource_constraint: true},
+                        event_type: 'multi_agent_conflict',
+                        source_service: 'coordinator-agent',
+                        severity: 'high',
+                        context: {
+                            scenario_type: 'resource_conflict',
+                            involved_agents: ['financial-guardian', 'ops-guardian'],
+                            priority: 'fraud_investigation',
+                            resource_constraint: true
+                        },
+                        audience: 'operators',
                         correlation_id: correlationId
                     })
                 });

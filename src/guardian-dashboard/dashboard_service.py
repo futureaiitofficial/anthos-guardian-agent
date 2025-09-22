@@ -502,14 +502,14 @@ async def proxy_ops_guardian_pause(request: Request):
         logger.error("Error proxying to Ops Guardian coordination", error=str(e))
         raise HTTPException(status_code=503, detail=f"Ops Guardian coordination unavailable: {str(e)}")
 
-@app.post("/api/explainer-agent/explain/multi-agent-scenario")
-async def proxy_explainer_agent_scenario(request: Request):
-    """Proxy multi-agent scenario requests to Explainer Agent"""
+@app.post("/api/explainer-agent/explain/event")
+async def proxy_explainer_agent_event(request: Request):
+    """Proxy event explanation requests to Explainer Agent"""
     try:
         body = await request.json()
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                "http://explainer-agent:8082/explain/multi-agent-scenario",
+                "http://explainer-agent:8082/explain/event",
                 json=body,
                 timeout=30.0
             )
