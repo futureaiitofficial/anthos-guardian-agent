@@ -502,6 +502,52 @@ async def proxy_ops_guardian_pause(request: Request):
         logger.error("Error proxying to Ops Guardian coordination", error=str(e))
         raise HTTPException(status_code=503, detail=f"Ops Guardian coordination unavailable: {str(e)}")
 
+@app.post("/api/ops-guardian/monitoring/start")
+async def proxy_ops_guardian_monitoring_start():
+    """Proxy monitoring start requests to Ops Guardian"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "http://ops-guardian:8083/monitoring/start",
+                timeout=30.0
+            )
+            return response.json()
+    except Exception as e:
+        logger.error("Error proxying to Ops Guardian monitoring start", error=str(e))
+        raise HTTPException(status_code=503, detail=f"Ops Guardian monitoring unavailable: {str(e)}")
+
+@app.post("/api/ops-guardian/scaling/decision")
+async def proxy_ops_guardian_scaling_decision(request: Request):
+    """Proxy scaling decision requests to Ops Guardian"""
+    try:
+        body = await request.json()
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "http://ops-guardian:8083/scaling/decision",
+                json=body,
+                timeout=30.0
+            )
+            return response.json()
+    except Exception as e:
+        logger.error("Error proxying to Ops Guardian scaling decision", error=str(e))
+        raise HTTPException(status_code=503, detail=f"Ops Guardian scaling decision unavailable: {str(e)}")
+
+@app.post("/api/ops-guardian/scaling/manual")
+async def proxy_ops_guardian_scaling_manual(request: Request):
+    """Proxy manual scaling requests to Ops Guardian"""
+    try:
+        body = await request.json()
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "http://ops-guardian:8083/scaling/manual",
+                json=body,
+                timeout=30.0
+            )
+            return response.json()
+    except Exception as e:
+        logger.error("Error proxying to Ops Guardian manual scaling", error=str(e))
+        raise HTTPException(status_code=503, detail=f"Ops Guardian manual scaling unavailable: {str(e)}")
+
 @app.post("/api/explainer-agent/explain/event")
 async def proxy_explainer_agent_event(request: Request):
     """Proxy event explanation requests to Explainer Agent"""
