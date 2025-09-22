@@ -38,5 +38,8 @@ requires:
 - configs:
   - financial-guardian
   path: src/financial-guardian/skaffold.yaml
+- configs:
+  - explainer-agent
+  path: src/explainer-agent/skaffold.yaml
 deploy:
   tolerateFailuresUntilDeadline: true

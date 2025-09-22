@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: explainer-agent
+  labels:
+    app: explainer-agent
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: explainer-agent
+  template:
+    metadata:
+      labels:
+        app: explainer-agent
+        version: v2
+    spec:
+      serviceAccountName: default
+      terminationGracePeriodSeconds: 5
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+      containers:
+      - name: explainer-agent
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          privileged: false
+          readOnlyRootFilesystem: true
+        image: explainer-agent
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8082
+          name: http
+          protocol: TCP
+        env:
+        - name: VERSION
+          value: v2.0.0
+        - name: PORT
+          value: "8082"
+        - name: LOG_LEVEL
+          value: info
+        - name: GEMINI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: guardian-secrets
+              key: GEMINI_API_KEY
+        - name: GEMINI_MODEL
+          value: gemini-1.5-flash
+        - name: FINANCIAL_GUARDIAN_URL
+          value: http://financial-guardian:8081
+        - name: OPS_GUARDIAN_URL
+          value: http://ops-guardian:8083
+        - name: COORDINATOR_AGENT_URL
+          value: http://coordinator-agent:8084
+        envFrom:
+        - configMapRef:
+            name: environment-config
+        resources:
+          limits:
+            cpu: 500m
+            ephemeral-storage: 0.25Gi
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            ephemeral-storage: 0.25Gi
+            memory: 256Mi
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8082
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthy
+            port: 8082
+          initialDelaySeconds: 120
+          periodSeconds: 15
+          timeoutSeconds: 10
+        volumeMounts:
+        - name: tmp-dir
+          mountPath: /tmp
+      volumes:
+      - name: tmp-dir
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: explainer-agent
+  labels:
+    app: explainer-agent
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8082
+    targetPort: 8082
+  selector:
+    app: explainer-agent

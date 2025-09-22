@@ -241,6 +241,101 @@ class FraudDetector:
             "red_flags": red_flags,
             "recommendation": recommendation
         }
+    
+    def generate_user_explanation(self, analysis: Dict, transaction: Dict, history: List[Dict]) -> Dict:
+        """Generate user-friendly explanation for fraud analysis"""
+        
+        try:
+            # Get basic transaction info
+            amount = transaction.get('amount', 0)
+            merchant = transaction.get('merchant', 'Unknown Merchant')
+            action = analysis.get('recommendation', 'UNKNOWN').lower()
+            
+            # Calculate context from history
+            if history:
+                amounts = [t.get('amount', 0) for t in history if isinstance(t.get('amount'), (int, float))]
+                avg_amount = sum(amounts) / len(amounts) if amounts else amount
+                typical_amount = int(avg_amount) if avg_amount > 0 else amount
+                multiplier = round(amount / avg_amount, 1) if avg_amount > 0 else 1
+            else:
+                typical_amount = amount
+                multiplier = 1
+            
+            # Generate user-friendly title
+            if action == 'block':
+                title = "🛡️ Transaction Blocked"
+                action_text = "blocked"
+            elif action == 'flag':
+                title = "⚠️ Transaction Flagged"
+                action_text = "flagged for review"
+            else:
+                title = "✅ Transaction Approved"
+                action_text = "approved"
+            
+            # Generate explanation based on red flags
+            reasons = []
+            red_flags = analysis.get('red_flags', [])
+            
+            for flag in red_flags:
+                if 'large' in flag.lower() or 'amount' in flag.lower():
+                    if multiplier > 1:
+                        reasons.append(f"it's {multiplier}× larger than your usual ${typical_amount} purchases")
+                    else:
+                        reasons.append(f"the amount (${amount}) is unusually large")
+                elif 'suspicious' in flag.lower() and 'merchant' in flag.lower():
+                    reasons.append(f"the merchant name '{merchant}' appears suspicious")
+                elif 'time' in flag.lower() or 'unusual time' in flag.lower():
+                    reasons.append("it occurred at an unusual time")
+                elif 'location' in flag.lower():
+                    reasons.append("the transaction location is unusual")
+            
+            # Build explanation text
+            if not reasons:
+                reason_text = "our security systems detected unusual patterns"
+            elif len(reasons) == 1:
+                reason_text = reasons[0]
+            else:
+                reason_text = ", ".join(reasons[:-1]) + f", and {reasons[-1]}"
+            
+            # Generate next steps based on action
+            if action == 'block':
+                next_steps = [
+                    "If this was you, please verify via the mobile app or call us",
+                    "If this wasn't you, your account is secure - no action needed",
+                    "Contact support: 1-800-BANK-HELP if you have questions"
+                ]
+            elif action == 'flag':
+                next_steps = [
+                    "Your transaction is being reviewed for security",
+                    "You'll receive an update within 24 hours",
+                    "Contact support: 1-800-BANK-HELP if urgent"
+                ]
+            else:
+                next_steps = [
+                    "Your transaction was processed successfully",
+                    "Continue using your account normally"
+                ]
+            
+            return {
+                "title": title,
+                "summary": f"Your ${amount} transaction to {merchant} was {action_text}",
+                "explanation": f"We {action_text} this transaction because {reason_text}.",
+                "next_steps": next_steps,
+                "confidence": analysis.get('fraud_score', 0),
+                "user_friendly": True
+            }
+            
+        except Exception as e:
+            logger.error("Error generating user explanation", error=str(e))
+            # Fallback explanation
+            return {
+                "title": "🔍 Transaction Review",
+                "summary": f"Your transaction is being reviewed",
+                "explanation": "Our security systems are reviewing this transaction for your protection.",
+                "next_steps": ["Please contact support if you have questions: 1-800-BANK-HELP"],
+                "confidence": 0.5,
+                "user_friendly": True
+            }
 
 class FinancialGuardian:
     """Main Financial Guardian service class"""
@@ -422,9 +517,15 @@ def create_app():
             # Analyze transaction
             analysis = guardian.fraud_detector.analyze_transaction(transaction, history)
             
+            # Generate user-friendly explanation
+            user_explanation = guardian.fraud_detector.generate_user_explanation(
+                analysis, transaction, history
+            )
+            
             return {
                 'transaction_id': transaction.get('uuid'),
                 'analysis': analysis,
+                'user_explanation': user_explanation,
                 'timestamp': datetime.now().isoformat()
             }, 200
             
