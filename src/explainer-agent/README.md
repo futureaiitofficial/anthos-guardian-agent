@@ -297,6 +297,10 @@ await explainer_client.post("/explain/coordination-event", json={
 })
 ```
 
+## 📚 **Documentation**
+
+- 🏗️ **[Multi-Agent Architecture](docs/MULTI_AGENT_ARCHITECTURE.md)** - Detailed multi-agent system design and coordination patterns
+
 ## 🏆 **Why This Architecture Wins**
 
 ### **Enterprise-Grade Design**

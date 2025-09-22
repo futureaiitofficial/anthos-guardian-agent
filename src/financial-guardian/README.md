@@ -282,9 +282,9 @@ See **[DEPLOYMENT.md](DEPLOYMENT.md)** for comprehensive GKE deployment instruct
 
 ## Documentation
 
-- 📖 **[Technical Documentation](DOCUMENTATION.md)** - Detailed system architecture and implementation
-- 🚀 **[Quick Start Guide](QUICK_START.md)** - Get up and running in 5 minutes  
-- 🚀 **[Deployment Guide](DEPLOYMENT.md)** - Complete deployment instructions for local and cloud
+- 📖 **[Technical Documentation](docs/DOCUMENTATION.md)** - Detailed system architecture and implementation
+- 🚀 **[Quick Start Guide](docs/QUICK_START.md)** - Get up and running in 5 minutes  
+- 🚀 **[Deployment Guide](docs/DEPLOYMENT.md)** - Complete deployment instructions for local and cloud
 - 🎮 **[Demo Script](demo_script.py)** - Interactive fraud detection demonstration
 
 ## Demo
