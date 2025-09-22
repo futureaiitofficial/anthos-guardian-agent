@@ -120,13 +120,33 @@ class FraudDetector:
             try:
                 response_text = response.text.strip()
                 
-                # Strip markdown code blocks if present
-                if response_text.startswith('```json'):
-                    response_text = response_text.replace('```json\n', '').replace('\n```', '')
-                elif response_text.startswith('```'):
-                    response_text = response_text.replace('```\n', '').replace('\n```', '')
+                # Strip markdown code blocks if present - handle various formats
+                if '```json' in response_text:
+                    # Extract content between ```json and ```
+                    start_marker = '```json'
+                    end_marker = '```'
+                    start_idx = response_text.find(start_marker)
+                    if start_idx != -1:
+                        start_idx += len(start_marker)
+                        end_idx = response_text.find(end_marker, start_idx)
+                        if end_idx != -1:
+                            response_text = response_text[start_idx:end_idx]
+                elif '```' in response_text:
+                    # Handle generic code blocks
+                    start_marker = '```'
+                    end_marker = '```'
+                    start_idx = response_text.find(start_marker)
+                    if start_idx != -1:
+                        start_idx += len(start_marker)
+                        # Skip any language identifier on the same line
+                        newline_idx = response_text.find('\n', start_idx)
+                        if newline_idx != -1:
+                            start_idx = newline_idx + 1
+                        end_idx = response_text.find(end_marker, start_idx)
+                        if end_idx != -1:
+                            response_text = response_text[start_idx:end_idx]
                 
-                # Clean up any remaining markdown formatting
+                # Clean up any remaining formatting
                 response_text = response_text.strip()
                 
                 result = json.loads(response_text)
