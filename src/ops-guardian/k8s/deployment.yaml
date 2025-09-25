@@ -56,6 +56,8 @@ spec:
           value: http://explainer-agent:8082
         - name: FINANCIAL_GUARDIAN_URL
           value: http://financial-guardian:8081
+        - name: DISABLE_AUTO_SCALING
+          value: "true"
         envFrom:
         - configMapRef:
             name: environment-config

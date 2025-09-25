@@ -367,8 +367,11 @@ class OpsGuardian:
         self.monitoring_thread = None
         self.metrics_history = {}
         self.scaling_decisions = []
-        self.coordination_paused = False
-        self.pause_reason = ""
+        
+        # Check if auto-scaling should be disabled via environment variable
+        auto_scaling_disabled = os.getenv("DISABLE_AUTO_SCALING", "true").lower() == "true"
+        self.coordination_paused = auto_scaling_disabled
+        self.pause_reason = "Auto-scaling disabled by DISABLE_AUTO_SCALING environment variable" if auto_scaling_disabled else ""
         
         # Integration endpoints
         self.explainer_agent_url = os.getenv("EXPLAINER_AGENT_URL", "http://explainer-agent:8082")
