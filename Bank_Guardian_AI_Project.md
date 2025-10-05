@@ -1,5 +1,7 @@
 # Bank Guardian AI: Intelligent Risk & Operations Management for Bank of Anthos
 
+> **Repository Migration Notice**: This repository includes migration tools to copy all content to a new location with a clean commit history. See [MIGRATION_QUICK_START.md](./MIGRATION_QUICK_START.md) or run `./migrate-to-bank-guardian-ai.sh` for automated migration.
+
 ## Overview
 
 Bank Guardian AI is an intelligent multi-agent system that enhances Bank of Anthos with autonomous fraud detection, infrastructure management, and intelligent explanation capabilities. The system deploys alongside Bank of Anthos on Google Kubernetes Engine, providing real-time monitoring and automated responses to both financial and operational threats.
