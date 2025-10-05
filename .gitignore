@@ -211,3 +211,6 @@ venv-*
 
 # go for ci
 go/
+
+# Repository migration temporary directory
+bank-guardian-ai-migration-temp/

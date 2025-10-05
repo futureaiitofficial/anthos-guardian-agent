@@ -1,5 +1,7 @@
 # Bank of Anthos
 
+> **Repository Migration Notice**: This repository can be migrated to a new location with a clean commit history. See [MIGRATION_QUICK_START.md](./MIGRATION_QUICK_START.md) for quick instructions or [REPOSITORY_MIGRATION_GUIDE.md](./REPOSITORY_MIGRATION_GUIDE.md) for detailed documentation.
+
 <!-- Checks badge below seem to take a "neutral" check as a negative and shows failures if some checks are neutral. Commenting out the badge for now. -->
 <!-- ![GitHub branch check runs](https://img.shields.io/github/check-runs/GoogleCloudPlatform/bank-of-anthos/main) -->
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fcymbal-bank.fsi.cymbal.dev%2F&label=live%20demo
